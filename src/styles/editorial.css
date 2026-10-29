@@ -1,0 +1,287 @@
+@import "tailwindcss";
+
+:root {
+  --bg-void: #0b0b0c;
+  --bg-elevated: #121215;
+  --bg-panel: #17171b;
+  --bg-paper: #eae8e2;
+  --bg-paper-deep: #dfdcd3;
+
+  --ink-ivory: #f3efe6;
+  --ink-muted: #a8a296;
+  --ink-dim: #68635a;
+  --ink-obsidian: #111113;
+
+  --accent-yellow: #f2c94c;
+  --accent-red: #e04f3e;
+  --accent-blue: #4a8fe7;
+
+  --rule-hairline: rgba(243, 239, 230, 0.14);
+  --rule-strong: rgba(243, 239, 230, 0.3);
+  --rule-paper: rgba(17, 17, 19, 0.14);
+
+  --font-display: 'Syne', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: var(--bg-void);
+  color: var(--ink-ivory);
+  font-family: var(--font-sans);
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-void);
+  color: var(--ink-ivory);
+  overflow-x: clip;
+  selection-background-color: var(--accent-yellow);
+}
+
+::selection {
+  background-color: var(--accent-yellow);
+  color: #0b0b0c;
+}
+
+/* Typography helpers */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-editorial-serif {
+  font-family: var(--font-serif);
+}
+
+.font-mono-code {
+  font-family: var(--font-mono);
+}
+
+.font-body {
+  font-family: var(--font-sans);
+}
+
+/* Outlined editorial display text */
+.text-outline-ivory {
+  color: transparent;
+  -webkit-text-stroke: 1.25px rgba(243, 239, 230, 0.36);
+}
+
+.text-outline-ivory-strong {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(243, 239, 230, 0.72);
+}
+
+.text-outline-yellow {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(242, 201, 76, 0.85);
+}
+
+.text-outline-dark {
+  color: transparent;
+  -webkit-text-stroke: 1.25px rgba(17, 17, 19, 0.28);
+}
+
+/* Atmospheric static film grain — GPU composited, zero repaint overhead */
+.film-grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+  opacity: 0.038;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+}
+
+/* Subtle editorial documentary coordinate grid */
+.editorial-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(243, 239, 230, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(243, 239, 230, 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.editorial-blueprint-grid {
+  background-image:
+    linear-gradient(to right, rgba(74, 143, 231, 0.14) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(74, 143, 231, 0.14) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* VOX-inspired editorial marker highlight */
+.vox-marker-yellow {
+  background: linear-gradient(
+    180deg,
+    transparent 56%,
+    rgba(242, 201, 76, 0.24) 56%,
+    rgba(242, 201, 76, 0.24) 92%,
+    transparent 92%
+  );
+  padding: 0 0.15em;
+}
+
+.vox-pill-yellow {
+  background-color: var(--accent-yellow);
+  color: #0b0b0c;
+  font-weight: 600;
+  padding: 0.08rem 0.42rem;
+  border-radius: 2px;
+}
+
+/* ============================================================
+   SIGNATURE FLASHLIGHT REVEAL SYSTEM
+   Driven via CSS custom properties (--torch-x, --torch-y, --torch-radius, --torch-opacity)
+   Zero React re-renders per pointer frame.
+   ============================================================ */
+.flashlight-stage {
+  --torch-x: -999px;
+  --torch-y: -999px;
+  --torch-radius: 250px;
+  --torch-opacity: 0;
+  position: relative;
+}
+
+.flashlight-reveal-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 12;
+  opacity: var(--torch-opacity, 0);
+  transition: opacity 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-mask-image: radial-gradient(
+    circle var(--torch-radius, 250px) at var(--torch-x, -999px) var(--torch-y, -999px),
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.92) 28%,
+    rgba(0, 0, 0, 0.45) 62%,
+    rgba(0, 0, 0, 0.08) 84%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: radial-gradient(
+    circle var(--torch-radius, 250px) at var(--torch-x, -999px) var(--torch-y, -999px),
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.92) 28%,
+    rgba(0, 0, 0, 0.45) 62%,
+    rgba(0, 0, 0, 0.08) 84%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  will-change: opacity;
+}
+
+/* Full accessible X-Ray reveal state (keyboard / reduced-motion / mobile toggle) */
+.flashlight-reveal-layer.is-xray-open {
+  opacity: 1 !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+}
+
+/* Subtle realistic optical beam glow accompanying the mask */
+.flashlight-optical-beam {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 13;
+  opacity: var(--torch-opacity, 0);
+  transition: opacity 280ms ease;
+  background:
+    radial-gradient(
+      circle calc(var(--torch-radius, 250px) * 0.48) at var(--torch-x, -999px) var(--torch-y, -999px),
+      rgba(243, 239, 230, 0.09) 0%,
+      rgba(242, 201, 76, 0.05) 55%,
+      transparent 100%
+    ),
+    radial-gradient(
+      circle calc(var(--torch-radius, 250px) * 1.15) at var(--torch-x, -999px) var(--torch-y, -999px),
+      rgba(242, 201, 76, 0.045) 0%,
+      rgba(74, 143, 231, 0.025) 58%,
+      transparent 100%
+    );
+  mix-blend-mode: screen;
+}
+
+/* Glossy jet-black pill button surface for Collaborate section */
+.glossy-black-pill {
+  background: linear-gradient(180deg, #232327 0%, #0f0f12 46%, #050507 100%);
+  color: #f6f4ee;
+  box-shadow:
+    0 26px 50px -12px rgba(12, 12, 14, 0.42),
+    0 12px 22px -8px rgba(12, 12, 14, 0.28),
+    0 2px 5px rgba(12, 12, 14, 0.22),
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.36),
+    inset 0 -2px 4px rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.glossy-black-pill:hover {
+  box-shadow:
+    0 32px 60px -12px rgba(12, 12, 14, 0.5),
+    0 16px 28px -8px rgba(12, 12, 14, 0.32),
+    0 3px 8px rgba(12, 12, 14, 0.25),
+    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.48),
+    inset 0 -2px 6px rgba(255, 255, 255, 0.12);
+}
+
+/* Accessible focus rings */
+:focus-visible {
+  outline: 2px solid var(--accent-yellow);
+  outline-offset: 3px;
+}
+
+.paper-theme :focus-visible {
+  outline: 2px solid #0b0b0c;
+  outline-offset: 3px;
+}
+
+/* Skip link for keyboard navigation */
+.skip-to-content {
+  position: fixed;
+  top: -100px;
+  left: 1rem;
+  z-index: 100;
+  background: var(--accent-yellow);
+  color: #0b0b0c;
+  padding: 0.65rem 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 4px;
+  transition: top 0.2s ease;
+}
+
+.skip-to-content:focus {
+  top: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flashlight-optical-beam {
+    display: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
